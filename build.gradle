@@ -1,0 +1,27 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.8.10'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.10'
+
+    id 'net.mamoe.mirai-console' version '2.15.0'
+}
+
+group = 'top.joyer'
+version = '0.1.0'
+
+repositories {
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    mavenCentral()
+}
+dependencies {
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
+    implementation group: 'com.alibaba.fastjson2', name: 'fastjson2', version: '2.0.40'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.13.0'
+}
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+}
+
+mirai {
+    jvmTarget JavaVersion.VERSION_1_8
+}
+
