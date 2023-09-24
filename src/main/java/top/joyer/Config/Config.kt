@@ -1,4 +1,4 @@
-package top.joyer
+package top.joyer.Config
 
 import net.mamoe.mirai.console.data.AutoSavePluginConfig
 import net.mamoe.mirai.console.data.value

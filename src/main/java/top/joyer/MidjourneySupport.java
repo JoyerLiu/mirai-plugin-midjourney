@@ -4,15 +4,12 @@ import net.mamoe.mirai.console.command.CommandManager;
 import net.mamoe.mirai.console.extension.PluginComponentStorage;
 import net.mamoe.mirai.console.plugin.jvm.JavaPlugin;
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescriptionBuilder;
-import net.mamoe.mirai.contact.Friend;
-import net.mamoe.mirai.event.GlobalEventChannel;
-import net.mamoe.mirai.event.Listener;
-import net.mamoe.mirai.event.events.FriendMessageEvent;
-import net.mamoe.mirai.event.events.GroupMessageEvent;
 import org.jetbrains.annotations.NotNull;
 import top.joyer.Command.HelpCommand;
 import top.joyer.Command.ImageCommand;
 import top.joyer.Command.ImageCompositeCommand;
+import top.joyer.Config.Config;
+import top.joyer.Config.HelpConfig;
 import top.joyer.Midjourney.*;
 
 
@@ -24,7 +21,7 @@ public final class MidjourneySupport extends JavaPlugin {
     HelpConfig helpConfig;
 
     private MidjourneySupport() {
-        super(new JvmPluginDescriptionBuilder("top.joyer.mirai-plugin-midjourney", "0.1.0 BETA")
+        super(new JvmPluginDescriptionBuilder("top.joyer.mirai-plugin-midjourney", "0.1.0")
                 .name("mirai-plugin-midjourney")
                 .author("Joyer")
                 .build());

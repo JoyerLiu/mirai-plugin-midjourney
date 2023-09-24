@@ -5,15 +5,18 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import net.mamoe.mirai.console.command.CommandContext;
 import net.mamoe.mirai.message.data.*;
+import top.joyer.Config.Config;
+
+import java.util.Objects;
 
 public class BotUtils {
     private BotUtils(){}
-    public static Config config=Config.INSTANCE;
+    //public static Config config=Config.INSTANCE;
     public static boolean needReply(CommandContext context){
         //判断是否为聊天环境发送的指令
         if(context.getSender().getUser()!=null) {
             //判断接受指令的是否为配置的机器人
-            if (context.getSender().getBot().getId() == Config.INSTANCE.getBot_qq()) {
+            if (Objects.requireNonNull(context.getSender().getBot()).getId() == Config.INSTANCE.getBot_qq()) {
                 //打开了At机器人时,在群中没有At机器人都不响应
 //                if (config.getAt_command()
 //                        && getMessageChainnKind(context.getOriginalMessage())==MessageKind.GROUP/*context.getOriginalMessage().get(MessageSource.Key).getKind()==MessageSourceKind.GROUP 2.15 版本可用*/) {
@@ -32,7 +35,7 @@ public class BotUtils {
     }
     public static MessageChain creatReplyMessageChine(CommandContext context){
         MessageChain new_messages = MessageUtils.newChain();
-        long sendQQ=context.getSender().getUser().getId();
+        long sendQQ= Objects.requireNonNull(context.getSender().getUser()).getId();
         //判断为群消息时添加At
         if (getMessageChainnKind(context.getOriginalMessage())==MessageKind.GROUP) {
             return new_messages.plus(new At(sendQQ)).plus(new PlainText(" "));//添加At

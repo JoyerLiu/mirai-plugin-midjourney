@@ -10,7 +10,7 @@ public class Midjourney {
     MidjourneyHttp midjourneyHttp;
     Map<Long,String> userIdtoTaskId=new HashMap<>();
 
-    String api_key="";
+    String api_key;
 
     public Midjourney(String api_key){
         midjourneyHttp=new MidjourneyHttp(api_key);
@@ -31,26 +31,21 @@ public class Midjourney {
      * @param base64Array 垫图
      * @param prompt 关键词
      * @param state 额外参数
-     * @param user_id 用户QQ
      * @return 响应
      * @throws IOException 网络错误
      */
-    public Response newImage(String[] base64Array, String prompt, String state,long user_id) throws IOException {
-        Response response=midjourneyHttp.newTask(base64Array,prompt,state);
-        if(response!=null)
-            userIdtoTaskId.put(user_id,response.getTaskID());
-       return response;
+    public Response newImage(String[] base64Array, String prompt, String state) throws IOException {
+        return midjourneyHttp.newTask(base64Array,prompt,state);
     }
 
     /**
      * 新建绘图任务
      * @param prompt 关键词
-     * @param user_id 用户QQ
      * @return 响应
      * @throws IOException 网络错误
      */
-    public Response newImage(String prompt,long user_id) throws IOException {
-        return newImage(new String[]{},prompt,"",user_id);
+    public Response newImage(String prompt) throws IOException {
+        return newImage(new String[]{},prompt,"");
     }
 
     /**
@@ -60,14 +55,10 @@ public class Midjourney {
      * @param notifyHook 回调地址, 为空时使用全局notifyHook
      * @param state 自定义参数
      * @param taskId 上一张图的任务ID
-     * @param user_id 用户QQ
      * @return 响应
      */
-    public Response secondImage(String action, int index, String notifyHook, String state, String taskId,long user_id) throws IOException {
-        Response response=midjourneyHttp.secondTask(action, index, notifyHook, state, taskId);
-        if(response!=null)
-            userIdtoTaskId.put(user_id,response.getTaskID());
-        return response;
+    public Response secondImage(String action, int index, String notifyHook, String state, String taskId) throws IOException {
+        return midjourneyHttp.secondTask(action, index, notifyHook, state, taskId);
     }
 
     /**
@@ -75,14 +66,10 @@ public class Midjourney {
      * @param action 动作，可选动作(UPSCALE(放大); VARIATION(变换); REROLL(重新生成))
      * @param index 上一张图的序号，action为 UPSCALE,VARIATION 时必须
      * @param taskId 上一张图的任务ID
-     * @param user_id 用户QQ
      * @return 响应
      */
-    public Response secondImage(String action, int index,String taskId,long user_id) throws IOException {
-        Response response=midjourneyHttp.secondTask(action, index, "", "", taskId);
-        if(response!=null)
-            userIdtoTaskId.put(user_id,response.getTaskID());
-        return response;
+    public Response secondImage(String action, int index,String taskId) throws IOException {
+        return midjourneyHttp.secondTask(action, index, "", "", taskId);
     }
 
     /**
@@ -94,7 +81,7 @@ public class Midjourney {
      */
     public Response secondImage(String action, int index,long user_id) throws IOException,NullPointerException {
         if(userIdtoTaskId!=null && userIdtoTaskId.containsKey(user_id)){
-            return secondImage(action, index, "", "", userIdtoTaskId.get(user_id),user_id);
+            return secondImage(action, index, "", "", userIdtoTaskId.get(user_id));
         }
         throw new NullPointerException("找不到用户对应的taskId");
     }
@@ -118,13 +105,13 @@ public class Midjourney {
      * @throws NullPointerException Response为空的错误
      */
     public ImgResponse pollImgResult(long sleep_time,String taskID) throws InterruptedException, IOException,NullPointerException {
-        ImgResponse imgResponse=null;
+        ImgResponse imgResponse;
         //轮询结果
         while(true){
             Thread.sleep(sleep_time);
             imgResponse = getImage(taskID);//查询结果
             if(imgResponse !=null){
-                MidjourneySupport.INSTANCE.getLogger().info("Midjourney Support在"+taskID+"轮询得到回应:\n"+ imgResponse.toString()); //测试，可能删除
+                MidjourneySupport.INSTANCE.getLogger().info("Midjourney Support在"+taskID+"轮询得到回应:\n"+ imgResponse); //测试，可能删除
                 if (imgResponse.getStatus().equals("FAILURE") || imgResponse.getStatus().equals("SUCCESS")){
                     break;
                 }
@@ -167,5 +154,12 @@ public class Midjourney {
             //失败
             throw new Exception(imgResponse.getStatus()+":"+imgResponse.getFailReason());
         }
+    }
+
+    public String getTaskID(long userId){
+        return userIdtoTaskId.get(userId);
+    }
+    public void putTaskID(long userId,String taskId){
+        userIdtoTaskId.put(userId,taskId);
     }
 }

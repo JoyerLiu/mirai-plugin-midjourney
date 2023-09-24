@@ -5,13 +5,12 @@ import net.mamoe.mirai.console.command.CommandContext;
 import net.mamoe.mirai.message.data.Image;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.utils.ExternalResource;
-import top.joyer.BotUtils;
 import top.joyer.Midjourney.ImgResponse;
 import top.joyer.Midjourney.Midjourney;
 import top.joyer.Midjourney.Response;
-import top.joyer.MidjourneySupport;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class MjToMirai {
     /**
@@ -22,7 +21,7 @@ public class MjToMirai {
      * @param context Command上下文
      */
     public static void replyImg(Response response, Midjourney midjourney, CommandContext context){
-        long sendQQ=context.getSender().getUser().getId();
+        long sendQQ= Objects.requireNonNull(context.getSender().getUser()).getId();
         //获取结果阶段
         if(response!=null&&(response.getCode()==1||response.getCode()==22)){ //判断请求是否成功,成功时轮询
             ImgResponse imgResponse=null;
@@ -42,8 +41,11 @@ public class MjToMirai {
             if(imgResponse!=null){
                 try {
                     byte[] bytes=midjourney.downloadImg(imgResponse);
-                    Image img=context.getSender().getSubject().uploadImage(ExternalResource.create(bytes).toAutoCloseable());
+                    Image img= Objects.requireNonNull(context.getSender().getSubject()).uploadImage(ExternalResource.create(bytes).toAutoCloseable());
                     new_img_messages=new_img_messages.plus("绘画完成，ID："+imgResponse.getId()).plus(img);
+                    if(!imgResponse.getAction().equals("UPSCALE")){
+                        midjourney.putTaskID(sendQQ,imgResponse.getId()); //最后更新用户的最后生成的绘图ID
+                    }
                 }catch (IOException e) {
                     MidjourneySupport.INSTANCE.getLogger().error("TaskID:"+response.getTaskID()+" QQ:"+sendQQ +" 图片下载错误："+e.getMessage());
                     new_img_messages=new_img_messages.plus("绘画失败：内部错误");
