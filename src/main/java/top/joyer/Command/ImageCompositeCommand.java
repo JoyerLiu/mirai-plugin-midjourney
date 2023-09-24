@@ -23,12 +23,7 @@ public class ImageCompositeCommand extends JCompositeCommand {
     public ImageCompositeCommand( Midjourney midjourney) {
         super(MidjourneySupport.INSTANCE,"change");
         this.midjourney=midjourney;
-        setDescription("对已有的绘画进行修改\n" +
-                "/image u <数字> <可选：任务ID> # 放大四幅图中的某一幅图\n" +
-                "/image v <数字> <可选：任务ID> # 以四幅图中的某一幅图为底再次进行绘图\n" +
-                "/image r <可选：任务ID> # 放大四幅图中的某一幅图\n" +
-                "例1：/image u 3 # 在上一幅生成的绘画中放大第3张图\n" +
-                "例2：/image V 3 123456 # 以id为123456的绘图中选择第3张图为底再次进行绘图");
+        setDescription("对已有的绘画进行修改");
     }
 
     public ImageCompositeCommand(@NotNull CommandOwner owner, @NotNull String primaryName, @NotNull String[] secondaryNames, @NotNull Permission parentPermission) {
