@@ -2,12 +2,9 @@ package top.joyer.Midjourney;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import top.joyer.HttpUtils;
-import top.joyer.MidjourneySupport;
+import top.joyer.Utils.HttpUtils;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MidjourneyHttp {
     String request_key="";

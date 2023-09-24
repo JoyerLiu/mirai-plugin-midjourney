@@ -6,8 +6,7 @@ import net.mamoe.mirai.console.command.java.JSimpleCommand;
 import net.mamoe.mirai.console.permission.Permission;
 import net.mamoe.mirai.message.data.*;
 import org.jetbrains.annotations.NotNull;
-import top.joyer.BotUtils;
-import top.joyer.Config.Config;
+import top.joyer.Utils.BotUtils;
 import top.joyer.Config.HelpConfig;
 import top.joyer.MidjourneySupport;
 

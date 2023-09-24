@@ -1,6 +1,6 @@
 package top.joyer.Midjourney;
 
-import top.joyer.HttpUtils;
+import top.joyer.Utils.HttpUtils;
 import top.joyer.MidjourneySupport;
 import java.io.IOException;
 import java.util.HashMap;

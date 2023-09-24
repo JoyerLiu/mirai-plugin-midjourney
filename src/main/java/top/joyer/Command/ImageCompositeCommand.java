@@ -6,12 +6,11 @@ import net.mamoe.mirai.console.command.java.JCompositeCommand;
 import net.mamoe.mirai.console.permission.Permission;
 import net.mamoe.mirai.message.data.MessageChain;
 import org.jetbrains.annotations.NotNull;
-import top.joyer.BotUtils;
-import top.joyer.Config.Config;
+import top.joyer.Utils.BotUtils;
 import top.joyer.Midjourney.Midjourney;
 import top.joyer.Midjourney.Response;
 import top.joyer.MidjourneySupport;
-import top.joyer.MjToMirai;
+import top.joyer.Midjourney.MjToMirai;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -38,9 +37,14 @@ public class ImageCompositeCommand extends JCompositeCommand {
             //回应
             long sendQQ = Objects.requireNonNull(context.getSender().getUser()).getId();
             MidjourneySupport.INSTANCE.getLogger().info("接收到来自 "+sendQQ+" 的变换绘画请求:"+context.getOriginalMessage().contentToString());
-            Response response;
+            Response response = null;
             try {
-                    response = midjourney.secondImage("VARIATION",index,taskID);
+                    if(taskID.isEmpty()){
+                        response = midjourney.secondImage("VARIATION",index,midjourney.getTaskID(sendQQ));
+                    }else {
+                        response = midjourney.secondImage("VARIATION",index,taskID);
+                    }
+
                 if(response!=null){
                     MessageChain new_messages = BotUtils.creatReplyMessageChine(context);
                     if(response.getCode()==1||response.getCode()==22){
@@ -50,6 +54,8 @@ public class ImageCompositeCommand extends JCompositeCommand {
                     }
                     context.getSender().sendMessage(new_messages);
                 }
+            } catch (NullPointerException e){
+                context.getSender().sendMessage(BotUtils.creatReplyMessageChine(context).plus("请求发送失败，原因：").plus(e.getMessage()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -59,7 +65,7 @@ public class ImageCompositeCommand extends JCompositeCommand {
     }
     @SubCommand("v")
     public void variation(CommandContext context, int index){
-        variation(context,index, midjourney.getTaskID(Objects.requireNonNull(context.getSender().getUser()).getId()));
+        variation(context,index,"");
     }
     @SubCommand("u")
     public void upscale(CommandContext context, int index, String taskID) {
@@ -68,10 +74,15 @@ public class ImageCompositeCommand extends JCompositeCommand {
         if(BotUtils.needReply(context)){
             //回应
             long sendQQ = Objects.requireNonNull(context.getSender().getUser()).getId();
-            MidjourneySupport.INSTANCE.getLogger().info("接收到来自 "+sendQQ+" 的变换绘画请求:"+context.getOriginalMessage().contentToString());
-            Response response;
+            MidjourneySupport.INSTANCE.getLogger().info("接收到来自 "+sendQQ+" 的放大绘画请求:"+context.getOriginalMessage().contentToString());
+            Response response = null;
             try {
-                response = midjourney.secondImage("UPSCALE",index,taskID);
+                if(taskID.isEmpty()){
+                    response = midjourney.secondImage("UPSCALE",index,midjourney.getTaskID(sendQQ));
+                }else{
+                    response = midjourney.secondImage("UPSCALE",index,taskID);
+                }
+
                 if(response!=null){
                     MessageChain new_messages = BotUtils.creatReplyMessageChine(context);
                     if(response.getCode()==1||response.getCode()==22){
@@ -81,6 +92,8 @@ public class ImageCompositeCommand extends JCompositeCommand {
                     }
                     context.getSender().sendMessage(new_messages);
                 }
+            } catch (NullPointerException e){
+                context.getSender().sendMessage(BotUtils.creatReplyMessageChine(context).plus("请求发送失败，原因：").plus(e.getMessage()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -90,7 +103,7 @@ public class ImageCompositeCommand extends JCompositeCommand {
     }
     @SubCommand("u")
     public void upscale(CommandContext context, int index){
-        upscale(context,index, midjourney.getTaskID(Objects.requireNonNull(context.getSender().getUser()).getId()));
+        upscale(context,index, "");
     }
     @SubCommand("r")
     public void reRoll(CommandContext context,String taskID) {
@@ -99,10 +112,15 @@ public class ImageCompositeCommand extends JCompositeCommand {
         if(BotUtils.needReply(context)){
             //回应
             long sendQQ = Objects.requireNonNull(context.getSender().getUser()).getId();
-            MidjourneySupport.INSTANCE.getLogger().info("接收到来自 "+sendQQ+" 的变换绘画请求:"+context.getOriginalMessage().contentToString());
-            Response response;
+            MidjourneySupport.INSTANCE.getLogger().info("接收到来自 "+sendQQ+" 的重新生成绘画请求:"+context.getOriginalMessage().contentToString());
+            Response response = null;
             try {
-                response = midjourney.secondImage("REROLL",0,taskID);
+                if(taskID.isEmpty()){
+                    response =midjourney.secondImage("REROLL",0,midjourney.getTaskID(sendQQ));
+                }else{
+                    response = midjourney.secondImage("REROLL",0,taskID);
+                }
+
                 if(response!=null){
                     MessageChain new_messages = BotUtils.creatReplyMessageChine(context);
                     if(response.getCode()==1||response.getCode()==22){
@@ -112,6 +130,8 @@ public class ImageCompositeCommand extends JCompositeCommand {
                     }
                     context.getSender().sendMessage(new_messages);
                 }
+            } catch (NullPointerException e){
+                context.getSender().sendMessage(BotUtils.creatReplyMessageChine(context).plus("请求发送失败，原因：").plus(e.getMessage()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -121,7 +141,7 @@ public class ImageCompositeCommand extends JCompositeCommand {
     }
     @SubCommand("r")
     public void reRoll(CommandContext context){
-        reRoll(context, midjourney.getTaskID(Objects.requireNonNull(context.getSender().getUser()).getId()));
+        reRoll(context, "");
     }
 
 }

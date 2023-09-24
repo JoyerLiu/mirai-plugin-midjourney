@@ -3,7 +3,7 @@ package top.joyer.Config
 import net.mamoe.mirai.console.data.AutoSavePluginConfig
 import net.mamoe.mirai.console.data.value
 
-public object HelpConfig : AutoSavePluginConfig("config") {
+object HelpConfig : AutoSavePluginConfig("help_config") {
     var help_text:String by value(
         """
             Bot指令列表：

@@ -6,11 +6,10 @@ import net.mamoe.mirai.console.command.java.JRawCommand;
 import net.mamoe.mirai.console.permission.Permission;
 import net.mamoe.mirai.message.data.*;
 import org.jetbrains.annotations.NotNull;
-import top.joyer.BotUtils;
-import top.joyer.Config.Config;
+import top.joyer.Utils.BotUtils;
 import top.joyer.Midjourney.*;
 import top.joyer.MidjourneySupport;
-import top.joyer.MjToMirai;
+import top.joyer.Midjourney.MjToMirai;
 
 import java.io.IOException;
 import java.util.Objects;
