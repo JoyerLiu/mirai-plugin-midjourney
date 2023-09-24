@@ -5,13 +5,13 @@ import com.alibaba.fastjson2.annotation.JSONField;
 
 public class Response {
     @JSONField(name = "code")
-    int code;
+    private int code;
     @JSONField(name = "description")
-    String description;
+    private String description;
     @JSONField(name = "properties")
-    JSONObject properties;
+    private JSONObject properties;
     @JSONField(name = "result")
-    String taskID;
+    private String taskID;
 
     public int getCode() {
         return code;

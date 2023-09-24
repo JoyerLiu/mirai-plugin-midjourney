@@ -56,12 +56,13 @@ public class HttpUtils {
         request.setHeader("Content-Type", "application/json");
         request.setHeader("Accept", "application/json");
         request.setHeader("Authorization",key);
-
+        MidjourneySupport.INSTANCE.getLogger().info(requestBody);
         try (CloseableHttpResponse response = httpClient.execute(request)) {
             HttpEntity entity = response.getEntity();
             if (entity != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) { //response为非空且状态为ok才接收
                 return EntityUtils.toString(entity);
             }
+            MidjourneySupport.INSTANCE.getLogger().error("请求发生错误"+response.getStatusLine().getStatusCode()+"\n"+EntityUtils.toString(entity));
         }
         return null;
     }
