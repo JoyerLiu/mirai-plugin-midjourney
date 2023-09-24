@@ -24,7 +24,7 @@ public final class MidjourneySupport extends JavaPlugin {
     HelpConfig helpConfig;
 
     private MidjourneySupport() {
-        super(new JvmPluginDescriptionBuilder("top.joyer.mirai-plugin-midjourney", "0.1.0")
+        super(new JvmPluginDescriptionBuilder("top.joyer.mirai-plugin-midjourney", "0.1.0 BETA")
                 .name("mirai-plugin-midjourney")
                 .author("Joyer")
                 .build());
