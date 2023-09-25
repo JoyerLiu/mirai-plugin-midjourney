@@ -38,7 +38,7 @@ public final class MidjourneySupport extends JavaPlugin {
         configInit();
 
         //加载实例
-        midjourney=new Midjourney(config.getApi_key());
+        midjourney=new Midjourney(config.getApi_url(),config.getApi_key());
 
         //注册指令
         commandInit();
