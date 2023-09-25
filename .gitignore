@@ -112,7 +112,7 @@ gradle-app.setting
 **/build/
 
 # Common working directory
-run/
+.run/
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
@@ -129,3 +129,6 @@ src/test/kotlin/RunTerminal.kt
 
 # Local Test Launch Point working directory
 /debug-sandbox
+
+#不上传gitignore
+.gitignore
