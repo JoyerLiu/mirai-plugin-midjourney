@@ -131,4 +131,4 @@ src/test/kotlin/RunTerminal.kt
 /debug-sandbox
 
 #不上传gitignore
-.gitignore
+/.gitignore
