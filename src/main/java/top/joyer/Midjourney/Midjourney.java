@@ -10,20 +10,24 @@ public class Midjourney {
     MidjourneyHttp midjourneyHttp;
     Map<Long,String> userIdtoTaskId=new HashMap<>();
 
-    String api_key;
 
-    public Midjourney(String api_key){
-        midjourneyHttp=new MidjourneyHttp(api_key);
-        this.api_key=api_key;
+    public Midjourney(String api_url,String api_key){
+        midjourneyHttp=new MidjourneyHttp(api_url,api_key);
+    }
+    public String getApi_url() {
+        return midjourneyHttp.getApi_url();
+    }
+
+    public void setApi_url(String api_url) {
+        midjourneyHttp.setApi_url(api_url);
     }
 
     public String getApi_key() {
-        return api_key;
+        return midjourneyHttp.getApi_key();
     }
 
     public void setApi_key(String api_key) {
-        this.api_key = api_key;
-        midjourneyHttp.setRequest_key(api_key);
+        midjourneyHttp.setApi_key(api_key);
     }
 
     /**

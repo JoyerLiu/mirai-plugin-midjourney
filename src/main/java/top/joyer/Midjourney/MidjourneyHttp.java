@@ -7,18 +7,30 @@ import top.joyer.Utils.HttpUtils;
 import java.io.IOException;
 
 public class MidjourneyHttp {
-    String request_key="";
+    String api_key ="";
+    String api_url="";
 
-    public MidjourneyHttp(String request_key){
-        this.request_key=request_key;
+    public MidjourneyHttp(String api_url, String api_key ) {
+        setApi_url(api_url);
+        setApi_key(api_key);
     }
 
-    public String getRequest_key() {
-        return request_key;
+    public String getApi_url() {
+        return api_url;
     }
 
-    public void setRequest_key(String request_key) {
-        this.request_key = request_key;
+    public void setApi_url(String api_url) {
+        if(api_url.charAt(api_url.length()-1)=='/')
+            api_url=api_url.substring(0,api_url.length()-1); //去除可能的‘/’符号
+        this.api_url = api_url;
+    }
+
+    public String getApi_key() {
+        return api_key;
+    }
+
+    public void setApi_key(String api_key) {
+        this.api_key = api_key;
     }
 
 
@@ -29,7 +41,7 @@ public class MidjourneyHttp {
         request.put("notifyHook","");
         request.put("prompt",prompt);
         request.put("state",state);
-        String respondString = HttpUtils.sendPostRequest("https://api.mctools.online/mj/submit/imagine", request.toJSONString(),request_key);//获得响应
+        String respondString = HttpUtils.sendPostRequest(getApi_url()+"/mj/submit/imagine", request.toJSONString(), api_key);//获得响应
         if (respondString != null) { //响应有效时
             Response response = JSON.parseObject(respondString, Response.class);
             return response;
@@ -43,7 +55,7 @@ public class MidjourneyHttp {
         request.put("notifyHook",notifyHook);
         request.put("state",state);
         request.put("taskId",taskId);
-        String respondString = HttpUtils.sendPostRequest("https://api.mctools.online/mj/submit/change", request.toJSONString(),request_key);//获得响应
+        String respondString = HttpUtils.sendPostRequest(getApi_url()+"/mj/submit/change", request.toJSONString(), api_key);//获得响应
         if (respondString != null) { //响应有效时
             Response response = JSON.parseObject(respondString, Response.class);
             return response;
@@ -52,7 +64,7 @@ public class MidjourneyHttp {
     }
 
     public ImgResponse getTaskResult(String taskID) throws IOException {
-        String respondString = HttpUtils.sendGetRequest("https://api.mctools.online/mj/task/"+taskID+"/fetch",request_key);//获得响应)
+        String respondString = HttpUtils.sendGetRequest(getApi_url()+"/mj/task/"+taskID+"/fetch", api_key);//获得响应)
         if (respondString != null) { //响应有效时
             return JSON.parseObject(respondString, ImgResponse.class);
         }
