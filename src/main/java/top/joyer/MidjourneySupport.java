@@ -39,6 +39,7 @@ public final class MidjourneySupport extends JavaPlugin {
 
         //加载实例
         midjourney=new Midjourney(config.getApi_url(),config.getApi_key());
+        midjourney.setRetry_count(config.getRetry_count()); //TODO：测试该功能
 
         //注册指令
         commandInit();
