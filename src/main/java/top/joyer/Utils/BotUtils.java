@@ -6,32 +6,40 @@ import com.alibaba.fastjson2.JSONObject;
 import net.mamoe.mirai.console.command.CommandContext;
 import net.mamoe.mirai.message.data.*;
 import top.joyer.Config.Config;
+import top.joyer.Config.WhitelistConfig;
+import top.joyer.MidjourneySupport;
 
 import java.util.Objects;
 
 public class BotUtils {
     private BotUtils(){}
+    private static WhitelistConfig whitelistConfig=WhitelistConfig.INSTANCE;
     //public static Config config=Config.INSTANCE;
     public static boolean needReply(CommandContext context){
         //判断是否为聊天环境发送的指令
         if(context.getSender().getUser()!=null) {
             //判断接受指令的是否为配置的机器人
             if (Objects.requireNonNull(context.getSender().getBot()).getId() == Config.INSTANCE.getBot_qq()) {
-                //打开了At机器人时,在群中没有At机器人都不响应
-//                if (config.getAt_command()
-//                        && getMessageChainnKind(context.getOriginalMessage())==MessageKind.GROUP/*context.getOriginalMessage().get(MessageSource.Key).getKind()==MessageSourceKind.GROUP 2.15 版本可用*/) {
-//                    At at = (At) context.getOriginalMessage().get(At.Key);
-//                    if (at == null) {
-//                        return false;
-//                    }
-//                    if (at.getTarget() != config.getBot_qq()) {
-//                        return false;
-//                    }
-//                }
+                if(whitelistConfig.getGroup_whitelist()){//当开启白名单时
+                    if(getMessageChainnKind(context.getOriginalMessage())==MessageKind.GROUP){//群组白名单判断
+                        for(Long i:whitelistConfig.getGroups()){
+                            if(context.getSender().getSubject().getId()==i){
+                                return true;
+                            }
+                        }
+                        MidjourneySupport.INSTANCE.getLogger().info("群组 "+context.getSender().getSubject().getId()+"判断为非白名单的群组,不予回复");
+                        return false;
+                    }
+                }
                 return true;
+            }else{
+                MidjourneySupport.INSTANCE.getLogger().info("群组 "+context.getSender().getSubject().getId()+"判断为非机器人"+Config.INSTANCE.getBot_qq()+"收到的指令,不予回复");
+                return false;
             }
+        }else{
+            MidjourneySupport.INSTANCE.getLogger().info("群组 "+context.getSender().getSubject().getId()+"判断为非聊天环境触发的指令,不予回复");
+            return false;
         }
-        return false;
     }
     public static MessageChain creatReplyMessageChine(CommandContext context){
         MessageChain new_messages = MessageUtils.newChain();

@@ -8,8 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import top.joyer.Command.HelpCommand;
 import top.joyer.Command.ImageCommand;
 import top.joyer.Command.ImageCompositeCommand;
+import top.joyer.Command.MdjCompositeCommand;
 import top.joyer.Config.Config;
 import top.joyer.Config.HelpConfig;
+import top.joyer.Config.WhitelistConfig;
 import top.joyer.Midjourney.*;
 
 
@@ -19,6 +21,8 @@ public final class MidjourneySupport extends JavaPlugin {
     Midjourney midjourney;
     Config config; //配置文件
     HelpConfig helpConfig;
+
+    WhitelistConfig whitelistConfig;
 
     private MidjourneySupport() {
         super(new JvmPluginDescriptionBuilder("top.joyer.mirai-plugin-midjourney", "0.1.0")
@@ -39,7 +43,7 @@ public final class MidjourneySupport extends JavaPlugin {
 
         //加载实例
         midjourney=new Midjourney(config.getApi_url(),config.getApi_key());
-        midjourney.setRetry_count(config.getRetry_count()); //TODO：测试该功能
+        midjourney.setRetry_count(config.getRetry_count());
 
         //注册指令
         commandInit();
@@ -55,16 +59,19 @@ public final class MidjourneySupport extends JavaPlugin {
             CommandManager.INSTANCE.registerCommand(new HelpCommand(),true);
         CommandManager.INSTANCE.registerCommand(new ImageCommand(midjourney),false);
         CommandManager.INSTANCE.registerCommand(new ImageCompositeCommand(midjourney),false);
+        CommandManager.INSTANCE.registerCommand(new MdjCompositeCommand(),false);
     }
 
     /**
      * 配置文件初始化
      */
-    private void configInit(){
+    public void configInit(){
         config=Config.INSTANCE;
         helpConfig=HelpConfig.INSTANCE;
+        whitelistConfig=WhitelistConfig.INSTANCE;
         reloadPluginConfig(helpConfig);
         reloadPluginConfig(config);
+        reloadPluginConfig(whitelistConfig);
         if(config.getApi_key().isEmpty()){
             getLogger().error("未填写API-KEY，请在配置文件中填写");
         }
