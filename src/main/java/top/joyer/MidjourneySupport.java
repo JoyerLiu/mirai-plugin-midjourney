@@ -72,6 +72,9 @@ public final class MidjourneySupport extends JavaPlugin {
         reloadPluginConfig(helpConfig);
         reloadPluginConfig(config);
         reloadPluginConfig(whitelistConfig);
+        if(config.getApi_url().isEmpty()){
+            getLogger().error("未填写API-KEY，请在配置文件中填写");
+        }
         if(config.getApi_key().isEmpty()){
             getLogger().error("未填写API-KEY，请在配置文件中填写");
         }
