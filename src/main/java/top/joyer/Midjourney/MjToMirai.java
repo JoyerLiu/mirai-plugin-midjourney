@@ -24,17 +24,7 @@ public class MjToMirai {
         //获取结果阶段
         if(response!=null&&(response.getCode()==1||response.getCode()==22)){ //判断请求是否成功,成功时轮询
             ImgResponse imgResponse=null;
-            try {
-                imgResponse=midjourney.pollImgResult(15000, response.getTaskID());
-            } catch (InterruptedException e) {
-                MidjourneySupport.INSTANCE.getLogger().error("TaskID:"+response.getTaskID()+" QQ:"+sendQQ +" 轮询线程错误："+e.getMessage());
-            }catch (NullPointerException e){
-                MidjourneySupport.INSTANCE.getLogger().error("TaskID:"+response.getTaskID()+" QQ:"+sendQQ +" 轮询结果错误："+e.getMessage());
-            } catch (IOException e) {
-                MidjourneySupport.INSTANCE.getLogger().error("TaskID:"+response.getTaskID()+" QQ:"+sendQQ +" 轮询网络错误："+e.getMessage());
-            } catch (Exception e) {
-                MidjourneySupport.INSTANCE.getLogger().error("TaskID:"+response.getTaskID()+" QQ:"+sendQQ +" 结果获取错误："+e.getMessage());
-            }
+            imgResponse=midjourney.pollImgResult(15000, response.getTaskID());
             //处理结果阶段
             MessageChain new_img_messages = BotUtils.creatReplyMessageChine(context);
             if(imgResponse!=null){
