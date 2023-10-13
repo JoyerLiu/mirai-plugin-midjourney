@@ -81,7 +81,7 @@ public class Midjourney {
      * @return 响应
      */
     public Response secondImage(String action, int index,String taskId) throws IOException {
-        return midjourneyHttp.secondTask(action, index, "", "", taskId);
+        return secondImage(action, index, "", "", taskId);
     }
 
     /**

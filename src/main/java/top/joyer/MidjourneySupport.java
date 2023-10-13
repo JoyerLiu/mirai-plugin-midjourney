@@ -57,15 +57,15 @@ public final class MidjourneySupport extends JavaPlugin {
         //TODO:注册指令
         if(config.getCommand_help())
             CommandManager.INSTANCE.registerCommand(new HelpCommand(),true);
-        CommandManager.INSTANCE.registerCommand(new ImageCommand(midjourney),false);
-        CommandManager.INSTANCE.registerCommand(new ImageCompositeCommand(midjourney),false);
-        CommandManager.INSTANCE.registerCommand(new MdjCompositeCommand(),false);
+        CommandManager.INSTANCE.registerCommand(new ImageCommand(midjourney),true);
+        CommandManager.INSTANCE.registerCommand(new ImageCompositeCommand(midjourney),true);
+        CommandManager.INSTANCE.registerCommand(new MdjCompositeCommand(),true);
     }
 
     /**
      * 配置文件初始化
      */
-    public void configInit(){
+    private void configInit(){
         config=Config.INSTANCE;
         helpConfig=HelpConfig.INSTANCE;
         whitelistConfig=WhitelistConfig.INSTANCE;
