@@ -8,4 +8,5 @@ object Config : AutoSavePluginConfig("config") {
     val api_url: String by value("")
     val api_key: String by value("");
     val command_help: Boolean by value(true); // help指令的开关
+    val retry_count:Int by value(5);//轮询重试次数
 }

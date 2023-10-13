@@ -25,7 +25,11 @@ public class HelpCommand extends JSimpleCommand {
         if(BotUtils.needReply(context)){
             //消息回复
             MessageChain new_messages= BotUtils.creatReplyMessageChine(context);
-            new_messages=new_messages.plus(new PlainText(helpConfig.getHelp_text()));//TODO：修改为可配置的help
+            StringBuilder text= new StringBuilder();
+            for(String i:helpConfig.getHelp_text()){ //格式化文档
+                text.append(i).append("\n");
+            }
+            new_messages=new_messages.plus(new PlainText(text));//TODO：修改为可配置的help
             context.getSender().sendMessage(new_messages);
         }
     }

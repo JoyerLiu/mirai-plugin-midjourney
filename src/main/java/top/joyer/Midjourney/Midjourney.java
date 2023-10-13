@@ -7,11 +7,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Midjourney {
-    MidjourneyHttp midjourneyHttp;
-    Map<Long,String> userIdtoTaskId=new HashMap<>();
+    private MidjourneyHttp midjourneyHttp;
+    private Map<Long,String> userIdtoTaskId=new HashMap<>();
 
+    private int retry_count=0;
 
-    public Midjourney(String api_url,String api_key){
+    public Midjourney(String api_url, String api_key){
         midjourneyHttp=new MidjourneyHttp(api_url,api_key);
     }
     public String getApi_url() {
@@ -30,6 +31,13 @@ public class Midjourney {
         midjourneyHttp.setApi_key(api_key);
     }
 
+    public int getRetry_count() {
+        return retry_count;
+    }
+
+    public void setRetry_count(int retry_count) {
+        this.retry_count = retry_count;
+    }
     /**
      * 新建绘图任务
      * @param base64Array 垫图
@@ -73,7 +81,7 @@ public class Midjourney {
      * @return 响应
      */
     public Response secondImage(String action, int index,String taskId) throws IOException {
-        return midjourneyHttp.secondTask(action, index, "", "", taskId);
+        return secondImage(action, index, "", "", taskId);
     }
 
     /**
@@ -104,23 +112,41 @@ public class Midjourney {
      * @param sleep_time 单次轮询时间
      * @param taskID 任务ID
      * @return 有效的ImgResponse
-     * @throws InterruptedException 线程休眠可能产生的线程错误
-     * @throws IOException API访问可能导致的网络错误
-     * @throws NullPointerException Response为空的错误
      */
-    public ImgResponse pollImgResult(long sleep_time,String taskID) throws InterruptedException, IOException,NullPointerException {
-        ImgResponse imgResponse;
+    public ImgResponse pollImgResult(long sleep_time,String taskID) {
+        ImgResponse imgResponse=null;
+        int retry_count1=0;
         //轮询结果
-        while(true){
-            Thread.sleep(sleep_time);
-            imgResponse = getImage(taskID);//查询结果
-            if(imgResponse !=null){
-                MidjourneySupport.INSTANCE.getLogger().info("Midjourney Support在"+taskID+"轮询得到回应:\n"+ imgResponse); //测试，可能删除
-                if (imgResponse.getStatus().equals("FAILURE") || imgResponse.getStatus().equals("SUCCESS")){
-                    break;
+        while (true){
+            try{
+                Thread.sleep(sleep_time);
+                imgResponse = getImage(taskID);//查询结果
+                if(imgResponse !=null){
+                    MidjourneySupport.INSTANCE.getLogger().info("Midjourney Support在"+taskID+"轮询得到回应:\n"+ imgResponse); //测试，可能删除
+                    if (imgResponse.getStatus().equals("FAILURE") || imgResponse.getStatus().equals("SUCCESS")){
+                        break;
+                    }
+                }else{
+                    throw new NullPointerException("respond为null");
                 }
-            }else{
-                throw new NullPointerException("respond为null");
+                retry_count1=retry_count; //能从api获取到则重置retry次数
+                continue;
+            }catch (InterruptedException e) {
+                MidjourneySupport.INSTANCE.getLogger().error("TaskID:"+taskID +" 轮询线程错误："+e.getMessage());
+            }catch (NullPointerException e){
+                MidjourneySupport.INSTANCE.getLogger().error("TaskID:"+taskID +" 轮询结果错误："+e.getMessage());
+            } catch (IOException e) {
+                MidjourneySupport.INSTANCE.getLogger().error("TaskID:"+taskID +" 轮询网络错误："+e.getMessage());
+            } catch (Exception e) {
+                MidjourneySupport.INSTANCE.getLogger().error("TaskID:"+taskID +" 结果获取错误："+e.getMessage());
+            }
+            //try失败后才会执行到这里
+            if(retry_count>0){
+                if(retry_count1==retry_count){
+                    break; //retry为0后放弃该次任务
+                }
+                retry_count1++;
+                MidjourneySupport.INSTANCE.getLogger().error("TaskID:"+taskID +" 轮询重试第"+retry_count1+"次");
             }
         }
         return imgResponse;
@@ -137,7 +163,7 @@ public class Midjourney {
      */
     public ImgResponse pollImgResult(long sleep_time,long userId) throws InterruptedException, IOException,NullPointerException {
         if(userIdtoTaskId.containsKey(userId)){
-            return pollImgResult(sleep_time,userIdtoTaskId.get(userId));
+            return pollImgResult(sleep_time,getTaskID(userId));
         }else{
             throw new NullPointerException("未找到用户"+userId+"对应的TaskId");
         }
