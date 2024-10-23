@@ -25,7 +25,7 @@ public final class MidjourneySupport extends JavaPlugin {
     WhitelistConfig whitelistConfig;
 
     private MidjourneySupport() {
-        super(new JvmPluginDescriptionBuilder("top.joyer.mirai-plugin-midjourney", "0.1.5")
+        super(new JvmPluginDescriptionBuilder("top.joyer.mirai-plugin-midjourney", "0.1.6")
                 .name("mirai-plugin-midjourney")
                 .author("Joyer")
                 .build());
