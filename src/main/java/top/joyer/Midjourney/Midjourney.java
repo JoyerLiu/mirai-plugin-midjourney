@@ -132,6 +132,7 @@ public class Midjourney {
                 retry_count1=retry_count; //能从api获取到则重置retry次数
                 continue;
             }catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // 恢复中断状态
                 MidjourneySupport.INSTANCE.getLogger().error("TaskID:"+taskID +" 轮询线程错误："+e.getMessage());
             }catch (NullPointerException e){
                 MidjourneySupport.INSTANCE.getLogger().error("TaskID:"+taskID +" 轮询结果错误："+e.getMessage());
@@ -162,29 +163,46 @@ public class Midjourney {
      * @throws NullPointerException Response为空的错误
      */
     public ImgResponse pollImgResult(long sleep_time,long userId) throws InterruptedException, IOException,NullPointerException {
-        if(userIdtoTaskId.containsKey(userId)){
-            return pollImgResult(sleep_time,getTaskID(userId));
-        }else{
-            throw new NullPointerException("未找到用户"+userId+"对应的TaskId");
-        }
+            if(userIdtoTaskId.containsKey(userId)){
+                return pollImgResult(sleep_time,getTaskID(userId));
+            }else{
+                throw new NullPointerException("未找到用户"+userId+"对应的TaskId");
+            }
     }
 
     /**
      * 下载结果图像
+     * @param sleep_time 重试时间
      * @param imgResponse API返回的绘图结果
      * @return bytes缓存流形式的图片
      * @throws IOException 下载图片可能产生的网络错误
      * @throws Exception 任务失败导致的错误
      */
-    public byte[] downloadImg(ImgResponse imgResponse) throws IOException,Exception{
-        if(imgResponse.getStatus().equals("SUCCESS")){
-            //成功
-            return HttpUtils.getImgToURL(imgResponse.getImageUrl());
-        }else{
-            //失败
-            throw new Exception(imgResponse.getStatus()+":"+imgResponse.getFailReason());
+    public byte[] downloadImg(long sleep_time,ImgResponse imgResponse) throws IOException, Exception {
+        if (imgResponse.getStatus().equals("SUCCESS")) {
+            // 尝试下载图片
+            try {
+                return HttpUtils.getImgToURL(imgResponse.getImageUrl());
+            } catch (IOException e) {
+
+                MidjourneySupport.INSTANCE.getLogger().error("'" + imgResponse.getImageUrl() + "' 下载失败，准备重试");
+                for (int retry_count1 = 1; retry_count1 <= retry_count; retry_count1++) {
+                    Thread.sleep(sleep_time);
+                    try {
+                        return HttpUtils.getImgToURL(imgResponse.getImageUrl());
+                    } catch (IOException e1) {
+                        MidjourneySupport.INSTANCE.getLogger().error("'" + imgResponse.getImageUrl() + "' 重试第 " + retry_count1 + " 次 图片下载失败：" + e1.getMessage());
+                    }
+                }
+                // 重试失败
+                throw new Exception("'" + imgResponse.getImageUrl() + "' 重试已到最大次数");
+            }
+        } else {
+            // 状态失败
+            throw new Exception(imgResponse.getStatus() + ":" + imgResponse.getFailReason());
         }
     }
+
 
     public String getTaskID(long userId){
         return userIdtoTaskId.get(userId);

@@ -29,7 +29,7 @@ public class MjToMirai {
             MessageChain new_img_messages = BotUtils.creatReplyMessageChine(context);
             if(imgResponse!=null){
                 try {
-                    byte[] bytes=midjourney.downloadImg(imgResponse);
+                    byte[] bytes=midjourney.downloadImg(15000,imgResponse);
                     Image img= Objects.requireNonNull(context.getSender().getSubject()).uploadImage(ExternalResource.create(bytes).toAutoCloseable());
                     new_img_messages=new_img_messages.plus("绘画完成，ID："+imgResponse.getId()).plus(img);
                     if(!imgResponse.getAction().equals("UPSCALE")){
