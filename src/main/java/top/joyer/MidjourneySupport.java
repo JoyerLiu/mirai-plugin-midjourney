@@ -39,11 +39,11 @@ public final class MidjourneySupport extends JavaPlugin {
     @Override
     public void onEnable() {
         //加载配置文件
-        configInit();
-
-        //加载实例
-        midjourney=new Midjourney(config.getApi_url(),config.getApi_key());
-        midjourney.setRetry_count(config.getRetry_count());
+        if(configInit()){
+            //加载实例
+            midjourney=new Midjourney(config.getApi_url(),config.getApi_key());
+            midjourney.setRetry_count(config.getRetry_count());
+        }
 
         //注册指令
         commandInit();
@@ -65,7 +65,8 @@ public final class MidjourneySupport extends JavaPlugin {
     /**
      * 配置文件初始化
      */
-    private void configInit(){
+    private Boolean configInit(){
+        boolean success=true;
         config=Config.INSTANCE;
         helpConfig=HelpConfig.INSTANCE;
         whitelistConfig=WhitelistConfig.INSTANCE;
@@ -74,13 +75,17 @@ public final class MidjourneySupport extends JavaPlugin {
         reloadPluginConfig(whitelistConfig);
         if(config.getApi_url().isEmpty()){
             getLogger().error("未填写API-KEY，请在配置文件中填写");
+            success=false;
         }
         if(config.getApi_key().isEmpty()){
             getLogger().error("未填写API-KEY，请在配置文件中填写");
+            success=false;
         }
         if(config.getBot_qq()==0L){
             getLogger().error("未填写Bot QQ，请在配置文件中填写");
+            success=false;
         }
+        return success;
     }
 //    Listener listener=GlobalEventChannel.INSTANCE.parentScope(this).subscribeAlways(GroupMessageEvent.class, event->{
 //
