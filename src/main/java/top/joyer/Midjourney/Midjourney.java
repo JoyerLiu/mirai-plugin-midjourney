@@ -11,10 +11,15 @@ public class Midjourney {
     private Map<Long,String> userIdtoTaskId=new HashMap<>();
 
     private int retry_count=0;
+    private int read_timeout;
+    private int connect_timeout;
 
     public Midjourney(String api_url, String api_key){
         midjourneyHttp=new MidjourneyHttp(api_url,api_key);
+        setConnect_timeout(1000 * 60); //默认的超时时间
+        setRead_timeout(1000 * 60 * 10); //默认的超时时间
     }
+
     public String getApi_url() {
         return midjourneyHttp.getApi_url();
     }
@@ -38,6 +43,25 @@ public class Midjourney {
     public void setRetry_count(int retry_count) {
         this.retry_count = retry_count;
     }
+
+    public int getRead_timeout() {
+        return read_timeout;
+    }
+
+    public void setRead_timeout(int read_timeout) {
+        HttpUtils.setReadTimeout(read_timeout);
+        this.read_timeout = read_timeout;
+    }
+
+    public int getConnect_timeout() {
+        return connect_timeout;
+    }
+
+    public void setConnect_timeout(int connect_timeout) {
+        HttpUtils.setConnectTimeout(connect_timeout);
+        this.connect_timeout = connect_timeout;
+    }
+
     /**
      * 新建绘图任务
      * @param base64Array 垫图
@@ -185,7 +209,7 @@ public class Midjourney {
                 return HttpUtils.getImgToURL(imgResponse.getImageUrl());
             } catch (IOException e) {
 
-                MidjourneySupport.INSTANCE.getLogger().error("'" + imgResponse.getImageUrl() + "' 下载失败，准备重试");
+                MidjourneySupport.INSTANCE.getLogger().warning("'" + imgResponse.getImageUrl() + "' 图片下载失败:"+e.getMessage()+"，准备重试");
                 for (int retry_count1 = 1; retry_count1 <= retry_count; retry_count1++) {
                     Thread.sleep(sleep_time);
                     try {
