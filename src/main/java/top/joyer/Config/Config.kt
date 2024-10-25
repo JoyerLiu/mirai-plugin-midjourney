@@ -9,4 +9,6 @@ object Config : AutoSavePluginConfig("config") {
     val api_key: String by value("");
     val command_help: Boolean by value(true); // help指令的开关
     val retry_count:Int by value(5);//轮询重试次数
+    val connect_timeout:Int by value(60000);
+    val read_timeout:Int by value(600000);
 }

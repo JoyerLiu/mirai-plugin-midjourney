@@ -50,6 +50,7 @@ public class ImageCommand extends JRawCommand {
                 }
             } catch (IOException e) {
                 MidjourneySupport.INSTANCE.getLogger().error(" "+sendQQ+" 的绘画请求失败:"+e.getMessage());
+                context.getSender().sendMessage(BotUtils.creatReplyMessageChine(context).plus("请求发送失败"));
             }
             //获取到绘画请求，回复消息
             MjToMirai.replyImg(response,midjourney,context);
