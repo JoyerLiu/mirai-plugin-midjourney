@@ -185,7 +185,7 @@ public class Midjourney {
                 return HttpUtils.getImgToURL(imgResponse.getImageUrl());
             } catch (IOException e) {
 
-                MidjourneySupport.INSTANCE.getLogger().error("'" + imgResponse.getImageUrl() + "' 下载失败，准备重试");
+                MidjourneySupport.INSTANCE.getLogger().warning("'" + imgResponse.getImageUrl() + "' 图片下载失败:"+e.getMessage()+"，准备重试");
                 for (int retry_count1 = 1; retry_count1 <= retry_count; retry_count1++) {
                     Thread.sleep(sleep_time);
                     try {

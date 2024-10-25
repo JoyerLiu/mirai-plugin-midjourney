@@ -3,6 +3,7 @@ package top.joyer.Utils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -13,16 +14,30 @@ import org.apache.http.util.EntityUtils;
 import top.joyer.MidjourneySupport;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 
 public class HttpUtils {
 
     private static final CloseableHttpClient httpClient;
+    private static int readTimeout;
+    private static int connectTimeout;
+
+
 
     static  {
         httpClient = HttpClients.createDefault();
+        readTimeout = 1000*60*10;
+        connectTimeout = 1000*60;
+    }
+
+    public static void setReadTimeout(int timeout) {
+        readTimeout = timeout;
+    }
+
+    public static void setConnectTimeout(int timeout) {
+        connectTimeout = timeout;
     }
 
     /**
@@ -32,6 +47,12 @@ public class HttpUtils {
      */
     public static String sendGetRequest(String url,String key) throws IOException {
         HttpGet request = new HttpGet(url);
+        // 设置超时
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectTimeout(connectTimeout)
+                .setSocketTimeout(readTimeout)
+                .build();
+        request.setConfig(requestConfig);
         request.setHeader("Authorization",key);
         try (CloseableHttpResponse response = httpClient.execute(request)) {
             HttpEntity entity = response.getEntity();
@@ -49,6 +70,12 @@ public class HttpUtils {
     public static String sendPostRequest(String url, String requestBody,String key) throws IOException {
         HttpPost request = new HttpPost(url);
         StringEntity _entity = new StringEntity(requestBody,StandardCharsets.UTF_8);
+        // 设置超时
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectTimeout(connectTimeout)
+                .setSocketTimeout(readTimeout)
+                .build();
+        request.setConfig(requestConfig);
         request.setEntity(_entity);
         request.setHeader("Content-Type", "application/json");
         request.setHeader("Accept", "application/json");
@@ -65,7 +92,9 @@ public class HttpUtils {
     }
     public static byte[] getImgToURL(String url) throws IOException {
         URL url1=new URL(url);
-        URLConnection connection=url1.openConnection();
+        HttpURLConnection connection= (HttpURLConnection) url1.openConnection();
+        connection.setConnectTimeout(connectTimeout);
+        connection.setReadTimeout(readTimeout);
         InputStream inputStream=connection.getInputStream();
         return IOUtils.toByteArray(inputStream);
     }
